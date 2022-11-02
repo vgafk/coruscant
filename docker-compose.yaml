@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - DATABASE_HOST=127.0.0.1
+      - POSTGRES_USER=coruscant
+      - POSTGRES_PASSWORD=coruscantpass
+      - POSTGRES_DB=coruscant
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      corusant_net:
+        ipv4_address: 172.16.0.254
+
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+        PGADMIN_DEFAULT_EMAIL: "test@gmail.com"
+        PGADMIN_DEFAULT_PASSWORD: "test123!"
+    ports:
+        - "16543:80"
+    networks:
+      corusant_net:
+        ipv4_address: 172.16.0.253
+    depends_on:
+        - postgres
+
+networks:
+  corusant_net:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.0.0/24
+        gateway: 172.16.0.1
